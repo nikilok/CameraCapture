@@ -55,18 +55,30 @@ export default class CameraCapture {
     }
   };
 
-  // A function that returns an array of equally spaced frame numbers
-  getFrameNumbers = (totalFrames: number, captureFrames: number) => {
+  /**
+   * A function that returns an array of equally spaced frame numbers, given
+   * the totalFrames and number of frames to capture.
+   * @param totalFrames number
+   * @param numberFramesToCapture number
+   * @returns number []
+   */
+  getFrameNumbers = (
+    totalFrames: number,
+    numberFramesToCapture: number
+  ): number[] => {
     // Check if the input is valid
-    if (totalFrames <= 0 || captureFrames <= 0 || captureFrames > totalFrames) {
+    if (
+      totalFrames <= 0 ||
+      numberFramesToCapture <= 0 ||
+      numberFramesToCapture > totalFrames
+    ) {
       return [];
     }
-    // Initialize the output array
     const output = [];
     // Calculate the interval between frames
-    const interval = Math.floor(totalFrames / captureFrames);
+    const interval = Math.floor(totalFrames / numberFramesToCapture);
     // Loop through the capture frames
-    for (let i = 0; i < captureFrames; i++) {
+    for (let i = 0; i < numberFramesToCapture; i++) {
       // Calculate the frame number
       const frameNumber = i * interval + 2;
       output.push(frameNumber);
@@ -74,7 +86,16 @@ export default class CameraCapture {
     return output;
   };
 
-  getElapsedTimesMap = (totalFrames: number, playbackFramerate: number) => {
+  /**
+   * Fn that returns an elapsed time Eg: 0.2 -> Frame No (Eg: 1)
+   * @param totalFrames number
+   * @param playbackFramerate number
+   * @returns Map
+   */
+  getElapsedTimeToFrameNosMap = (
+    totalFrames: number,
+    playbackFramerate: number
+  ) => {
     // Check if the input is valid
     if (totalFrames <= 0 || playbackFramerate <= 0) {
       return new Map();
@@ -111,7 +132,10 @@ export default class CameraCapture {
       numberFramesToCapture
     );
     // get a map of elapsed time to frame number
-    const elapsedTimeMap = this.getElapsedTimesMap(totalFrames, frameRate);
+    const elapsedTimeToFrameNoMap = this.getElapsedTimeToFrameNosMap(
+      totalFrames,
+      frameRate
+    );
 
     const trackProcessor = new MediaStreamTrackProcessor(videoTrack);
 
@@ -138,7 +162,7 @@ export default class CameraCapture {
         // ensure they exist in the evenly spread out framesToCapture array.
         // If so capture run routine to capture frame, and callback application layer.
         if (
-          framesToCapture.includes(elapsedTimeMap.get(elapsedTime)) &&
+          framesToCapture.includes(elapsedTimeToFrameNoMap.get(elapsedTime)) &&
           elapsedTime != lastElapsedTime
         ) {
           lastElapsedTime = elapsedTime;
