@@ -1,15 +1,11 @@
-import { Config } from "./types";
+import { CaptureImagesOptions, Config } from "./types";
 import CameraCapture from "./cameraCapture";
 import { DEFAULT_CONFIG } from "./config";
 
 interface createCaptureResponse {
   getFoo: () => string | undefined;
   startMediaStream: () => Promise<MediaStream | undefined>;
-  captureImages: (
-    callBack: (count: number) => void,
-    durationInSeconds?: number,
-    numberFramesToCapture?: number
-  ) => void;
+  captureImages: (options: CaptureImagesOptions) => void;
 }
 
 export default function createCapture(

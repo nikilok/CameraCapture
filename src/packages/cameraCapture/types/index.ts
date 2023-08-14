@@ -7,6 +7,13 @@ export interface Config {
   };
 }
 
+export interface CaptureImagesOptions {
+  beforeCaptureImageHandle: (count: number) => void;
+  onImageCaptureHandle: (imageBitMap: ImageBitmap) => void;
+  durationInSeconds?: number;
+  numberFramesToCapture?: number;
+}
+
 export interface VideoTrack {
   stop(): unknown;
   track: MediaStreamTrack;

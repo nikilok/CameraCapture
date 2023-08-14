@@ -1,4 +1,4 @@
-import { Config, VideoTrack } from "./types";
+import { CaptureImagesOptions, Config, VideoTrack } from "./types";
 import { DEFAULT_CONFIG } from "./config";
 
 declare class MediaStreamTrackProcessor {
@@ -90,7 +90,7 @@ export default class CameraCapture {
    * Fn that returns an elapsed time Eg: 0.2 -> Frame No (Eg: 1)
    * @param totalFrames number
    * @param playbackFramerate number
-   * @returns Map
+   * @returns Map<milliseconds, frameNo>
    */
   getElapsedTimeToFrameNosMap = (
     totalFrames: number,
@@ -114,11 +114,20 @@ export default class CameraCapture {
     return output;
   };
 
-  captureImages = async (
-    callBack: (count: number) => void,
-    durationInSeconds: number = 10,
-    numberFramesToCapture: number = 10
-  ) => {
+  /**
+   * Fn that gives you a callback function, along with total duration in seconds to capture,
+   * and numberFramesToCapture as shots. The function will trigger the callback just before
+   * a shot is taken allowing the application to do anything before a shot is taken.
+   * @param callBack (count) => void
+   * @param durationInSeconds number
+   * @param numberFramesToCapture number
+   */
+  captureImages = async ({
+    beforeCaptureImageHandle,
+    onImageCaptureHandle,
+    durationInSeconds = 10,
+    numberFramesToCapture = 10,
+  }: CaptureImagesOptions) => {
     let startTime = null;
     let capturedFrames = 0;
 
@@ -167,7 +176,9 @@ export default class CameraCapture {
         ) {
           lastElapsedTime = elapsedTime;
           capturedFrames++;
-          callBack(capturedFrames);
+          beforeCaptureImageHandle(capturedFrames);
+          const imageBitMap = await createImageBitmap(frame);
+          onImageCaptureHandle(imageBitMap);
         }
         frame.close();
       } else {
