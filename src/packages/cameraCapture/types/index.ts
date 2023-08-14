@@ -8,6 +8,7 @@ export interface Config {
 }
 
 export interface VideoTrack {
+  stop(): unknown;
   track: MediaStreamTrack;
   getSettings: () => { frameRate: number };
 }

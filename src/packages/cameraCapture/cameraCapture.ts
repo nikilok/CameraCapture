@@ -150,6 +150,7 @@ export default class CameraCapture {
         console.log("Time out", elapsedTime, durationInSeconds);
         reader.cancel();
         frame.close();
+        videoTrack.stop();
       }
     }
   };
