@@ -7,18 +7,12 @@ declare class MediaStreamTrackProcessor {
 }
 
 export default class CameraCapture {
-  private foo: string | undefined;
   private videoConfig: MediaStreamConstraints;
   private mediaStream: MediaStream | undefined;
 
   constructor(config: Config = DEFAULT_CONFIG) {
-    this.foo = config.foo;
     this.videoConfig = this.getMediaConfig(config);
   }
-
-  getFoo = (): string | undefined => {
-    return this.foo;
-  };
 
   getMediaConfig = (mediaConfig: Config): MediaStreamConstraints => {
     return {

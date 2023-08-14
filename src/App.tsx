@@ -9,9 +9,10 @@ import {
 } from "./App.styled";
 
 function App() {
-  const { startMediaStream, captureImages } = createCapture({
-    media: { idealCameraWidth: 1024, frontFacing: false },
-  });
+  const { startMediaStream, captureImages, convertImageBitMapToString } =
+    createCapture({
+      media: { idealCameraWidth: 1024, frontFacing: false },
+    });
   // 0 = dark, 1 = light
   const lightingPattern = [
     0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1,
@@ -26,25 +27,9 @@ function App() {
     setDarkMode(lightingPattern[shotNumber - 1] === 0);
   };
 
-  const onImageCaptureHandle = (imageBitMap: ImageBitmap) => {
-    const canvas = document.createElement("canvas");
-    // Set the width and height of the canvas
-    canvas.width = imageBitMap.width;
-    canvas.height = imageBitMap.height;
-    // Get the canvas context
-    const ctx = canvas.getContext("2d");
-    if (ctx) {
-      // Draw the image bitmap on to the canvas
-      ctx.drawImage(imageBitMap, 0, 0);
-      // Convert the canvas to a blob
-      canvas.toBlob((blob) => {
-        if (blob)
-          if (imageBitMap instanceof ImageBitmap) {
-            // Create an array of urls from the blob
-            setUrls((url) => [...url, URL.createObjectURL(blob)]);
-          }
-      });
-    }
+  const onImageCaptureHandle = async (imageBitMap: ImageBitmap) => {
+    const image = await convertImageBitMapToString(imageBitMap);
+    setUrls((url) => [...url, image]);
   };
 
   // Effect that starts the media stream using startMediaStream
