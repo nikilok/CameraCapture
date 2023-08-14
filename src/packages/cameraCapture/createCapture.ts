@@ -2,18 +2,24 @@ import { Config } from "./types";
 import CameraCapture from "./cameraCapture";
 import { DEFAULT_CONFIG } from "./config";
 
-interface ReturnType {
+interface createCaptureResponse {
   getFoo: () => string | undefined;
-  getMediaStream: () => Promise<MediaStream | undefined>;
+  startMediaStream: () => Promise<MediaStream | undefined>;
+  captureImages: (
+    callBack: (count: number) => void,
+    durationInSeconds?: number,
+    numberFramesToCapture?: number
+  ) => void;
 }
 
 export default function createCapture(
   config: Config = DEFAULT_CONFIG
-): ReturnType {
-  const { getFoo, getMediaStream } = new CameraCapture(config);
+): createCaptureResponse {
+  const { getFoo, startMediaStream, captureImages } = new CameraCapture(config);
 
   return {
     getFoo,
-    getMediaStream,
+    startMediaStream,
+    captureImages,
   };
 }
