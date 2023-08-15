@@ -74,47 +74,37 @@ export default class CameraCapture {
     // Loop through the capture frames
     for (let i = 0; i < numberFramesToCapture; i++) {
       // Calculate the frame number
-      const frameNumber = i * interval + 2;
+      const frameNumber = i * interval;
       output.push(frameNumber);
     }
     return output;
   };
 
   /**
-   * Fn that returns an elapsed time Eg: 0.2 -> Frame No (Eg: 1)
+   * Fn that returns the frame number based on timestamp
+   * @param timeStamp number
    * @param totalFrames number
    * @param playbackFramerate number
-   * @returns Map<milliseconds, frameNo>
+   * @returns number
    */
-  getElapsedTimeToFrameNosMap = (
+  getFrameNumberByElapsedTime = (
+    timeStamp: number,
     totalFrames: number,
     playbackFramerate: number
-  ) => {
-    // Check if the input is valid
-    if (totalFrames <= 0 || playbackFramerate <= 0) {
-      return new Map();
+  ): number => {
+    const frameNumber = Math.round(timeStamp * playbackFramerate);
+
+    if (frameNumber < 0 || frameNumber > totalFrames) {
+      return NaN;
     }
-    const output = new Map();
-    // Calculate the duration of each frame in seconds
-    const frameDuration = 1 / playbackFramerate;
-    // Loop through the total frames
-    for (let i = 0; i < totalFrames; i++) {
-      const frameNumber = i + 1;
-      // Calculate the elapsed time in seconds
-      const elapsedTime = +(i * frameDuration).toFixed(1);
-      // Set the key-value pair in the output map
-      output.set(elapsedTime, frameNumber);
-    }
-    return output;
+
+    return frameNumber;
   };
 
   /**
    * Fn that gives you a callback function, along with total duration in seconds to capture,
    * and numberFramesToCapture as shots. The function will trigger the callback just before
    * a shot is taken allowing the application to do anything before a shot is taken.
-   * @param callBack (count) => void
-   * @param durationInSeconds number
-   * @param numberFramesToCapture number
    */
   captureImages = async ({
     beforeCaptureImageHandle,
@@ -134,16 +124,10 @@ export default class CameraCapture {
       totalFrames,
       numberFramesToCapture
     );
-    // get a map of elapsed time to frame number
-    const elapsedTimeToFrameNoMap = this.getElapsedTimeToFrameNosMap(
-      totalFrames,
-      frameRate
-    );
 
     const trackProcessor = new MediaStreamTrackProcessor(videoTrack);
 
     const reader = trackProcessor.readable.getReader();
-    let lastElapsedTime = null;
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
@@ -157,18 +141,17 @@ export default class CameraCapture {
       }
 
       // Calculate the elapsed time in seconds
-      const elapsedTime = +((frame.timestamp - startTime) / 10e5).toFixed(1);
+      const elapsedTime = +((frame.timestamp - startTime) / 10e5);
 
       // if elapsed time is less than the overall duration keep the stream alive
       if (elapsedTime <= durationInSeconds) {
-        // Correlate elapsedtime (Map, with key elapsedtime to frameNumber) and
-        // ensure they exist in the evenly spread out framesToCapture array.
-        // If so capture run routine to capture frame, and callback application layer.
-        if (
-          framesToCapture.includes(elapsedTimeToFrameNoMap.get(elapsedTime)) &&
-          elapsedTime != lastElapsedTime
-        ) {
-          lastElapsedTime = elapsedTime;
+        const currentFrameNumber = this.getFrameNumberByElapsedTime(
+          elapsedTime,
+          totalFrames,
+          frameRate
+        );
+
+        if (currentFrameNumber >= framesToCapture[capturedFrames]) {
           capturedFrames++;
           beforeCaptureImageHandle(capturedFrames);
           const imageBitMap = await createImageBitmap(frame);

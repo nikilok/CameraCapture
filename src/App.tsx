@@ -70,7 +70,7 @@ function App() {
         />
         <ImageContainer>
           {urls.map((url, index) => (
-            <ImageShell>
+            <ImageShell key={index}>
               <img src={url} style={{ width: "100%" }} />
               <ImageCounterBadge>{index + 1}</ImageCounterBadge>
             </ImageShell>
