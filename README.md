@@ -30,7 +30,7 @@ Run unit tests UI using viTest
 npm run test:ui
 ```
 
-Press 'o' in the terminal to launch a browser instance automatically. Say chesse and hit the allow dialog to give your browser access to your camera.
+Press 'o' in the terminal to launch a browser instance automatically. Allow the browser access to your camera for the app to start capturing frames.
 
 ## Screenshots
 ![image](https://github.com/nikilok/CameraCapture/assets/6220175/cef42536-0d2e-4460-a57f-45c55c81bc15)
