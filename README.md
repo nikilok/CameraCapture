@@ -31,8 +31,3 @@ npm run test:ui
 ```
 
 Press 'o' in the terminal to launch a browser instance automatically. Allow the browser access to your camera for the app to start capturing frames.
-
-## Screenshots
-![image](https://github.com/nikilok/CameraCapture/assets/6220175/cef42536-0d2e-4460-a57f-45c55c81bc15)
-
-![image](https://github.com/nikilok/CameraCapture/assets/6220175/a90048ff-33cf-4cb6-94c1-2386570bd1ba)
